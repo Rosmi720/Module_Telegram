@@ -89,6 +89,15 @@ class TelegramController
         include $this->viewsPath . '/telegram_bot_scripts.php';
     }
 
+    /**
+     * Dedicated internal module API handler (route: telegram_api).
+     */
+    public function handleApi(): never
+    {
+        require __DIR__ . '/api.php';
+        exit();
+    }
+
     // ───────────────────────────────────────────────────────────
     //  AJAX API Actions (JSON)
     // ───────────────────────────────────────────────────────────
@@ -126,7 +135,15 @@ class TelegramController
 
         $res = TelegramBotService::verifyToken($token);
         if ($res['success']) {
-            $this->ok($res);
+            $user = $res['result'] ?? [];
+            $this->ok([
+                'success'  => true,
+                'message'  => $res['message'] ?? 'Bot token is valid.',
+                'username' => $user['username'] ?? '',
+                'name'     => $user['name'] ?? '',
+                'bot_id'   => $user['id'] ?? '',
+                'bot_data' => $user,
+            ]);
         } else {
             $this->fail($res);
         }

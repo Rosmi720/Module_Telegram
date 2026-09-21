@@ -58,7 +58,7 @@ $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\M
             var isChecked = this.checked ? 1 : 0;
             var el = this;
 
-            fetch('./api?action=telegram_bot_toggle&id=' + encodeURIComponent(id) + '&status=' + isChecked, {
+            fetch('./telegram_api?action=toggle&id=' + encodeURIComponent(id) + '&status=' + isChecked, {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
@@ -86,7 +86,7 @@ $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\M
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> ' + txtSending;
 
-            fetch('./api?action=telegram_bot_broadcast_test&bot_id=' + encodeURIComponent(id), {
+            fetch('./telegram_api?action=broadcast_test&bot_id=' + encodeURIComponent(id), {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
@@ -131,7 +131,7 @@ $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\M
             confirmPromise.then(function(confirmed) {
                 if (!confirmed) return;
 
-                fetch('./api?action=telegram_bot_delete&id=' + encodeURIComponent(id), {
+                fetch('./telegram_api?action=delete&id=' + encodeURIComponent(id), {
                     method: 'POST',
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })

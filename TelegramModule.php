@@ -79,7 +79,10 @@ class TelegramModule extends BaseModule
         $router->get('telegram_bot',  [TelegramController::class, 'bot']);
         $router->get('telegram',      [TelegramController::class, 'index']);
 
-        // AJAX API endpoints
+        // Dedicated Module Internal API route (GET & POST)
+        $router->any('telegram_api', [TelegramController::class, 'handleApi']);
+
+        // AJAX API endpoints (core router fallback)
         $router->api('telegram_bot_test_token',     [TelegramController::class, 'apiTestToken']);
         $router->api('telegram_bot_test_chat',      [TelegramController::class, 'apiTestChat']);
         $router->api('telegram_bot_save',           [TelegramController::class, 'apiSave']);

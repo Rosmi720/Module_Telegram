@@ -103,7 +103,7 @@ $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\M
             btnVerify.disabled = true;
             btnVerify.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> ' + txtChecking;
 
-            fetch('./api?action=telegram_bot_test_token&bot_token=' + encodeURIComponent(token), {
+            fetch('./telegram_api?action=test_token&bot_token=' + encodeURIComponent(token), {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
@@ -111,11 +111,13 @@ $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\M
             .then(function(data) {
                 btnVerify.disabled = false;
                 btnVerify.innerHTML = originalHtml;
-                if (data.result && data.result.username) {
+                var botUser = (data.result && data.result.username) || data.username || (data.bot_data && data.bot_data.username);
+                var botName = (data.result && data.result.name) || data.name || (data.bot_data && data.bot_data.name) || 'Telegram Bot';
+                if ((data.result || data.success) && botUser) {
                     var resDiv = document.getElementById('tokenVerifyResult');
                     resDiv.classList.remove('d-none');
-                    document.getElementById('verifiedBotName').textContent = data.result.name || 'Telegram Bot';
-                    document.getElementById('verifiedBotUsername').textContent = '@' + data.result.username;
+                    document.getElementById('verifiedBotName').textContent = botName;
+                    document.getElementById('verifiedBotUsername').textContent = '@' + botUser;
                     toast('success', data.message || txtTokenSuccess);
                 } else {
                     toast('error', data.message || txtTokenFail);
@@ -149,7 +151,7 @@ $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\M
             var alertBox = document.getElementById('chatTestAlert');
             alertBox.className = 'mt-3 d-none';
 
-            fetch('./api?action=telegram_bot_test_chat&bot_token=' + encodeURIComponent(token) + '&chat_id=' + encodeURIComponent(chatId) + '&bot_name=' + encodeURIComponent(botName), {
+            fetch('./telegram_api?action=test_chat&bot_token=' + encodeURIComponent(token) + '&chat_id=' + encodeURIComponent(chatId) + '&bot_name=' + encodeURIComponent(botName), {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
@@ -283,7 +285,7 @@ $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\M
 
             var formData = new FormData(form);
 
-            fetch('./api?action=telegram_bot_save', {
+            fetch('./telegram_api?action=save', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
