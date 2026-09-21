@@ -7,5 +7,6 @@ all: zip
 zip:
 	@mkdir -p $(DIST_DIR)
 	@rm -f $(DIST_DIR)/$(ZIP_NAME)
-	@cd .. && zip -r $(abspath $(DIST_DIR))/$(ZIP_NAME) Module_Telegram/ -x "Module_Telegram/.git/*" "Module_Telegram/Makefile" "Module_Telegram/README.md"
+	@zip -r $(abspath $(DIST_DIR))/$(ZIP_NAME) . -x ".git/*" "Makefile" "README.md"
+	@cp -f $(abspath $(DIST_DIR))/$(ZIP_NAME) $(abspath $(DIST_DIR))/telegram_1.0.0.zip 2>/dev/null || true
 	@echo "✓ Packaged to $(abspath $(DIST_DIR))/$(ZIP_NAME)"
