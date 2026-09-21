@@ -1,72 +1,266 @@
 # XC_VM Telegram Bot Integration Module
 # إضافة بوتات تيليجرام للبث التلقائي لمنصة XC_VM
 
-Official Telegram Bot management and automated broadcasting module for the **XC_VM IPTV Management Platform**.
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](module.json)
+[![Platform](https://img.shields.io/badge/platform-XC__VM%20%3E%3D2.0-green.svg)](https://github.com/Rosmi720/XC_VM)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-orange.svg)](LICENSE)
+[![Languages](https://img.shields.io/badge/languages-Arabic%20%7C%20English-teal.svg)](lang/)
+
+موديول تيليجرام الرسمي لمنصة **XC_VM** لإدارة البوتات والبث التلقائي والإشعارات الفورية عند إضافة وتجهيز الأفلام والمسلسلات وقنوات البث المباشر.
+
+The official Telegram Bot management and automated broadcasting integration module for the **XC_VM IPTV Management Platform**.
 
 ---
 
-## 🌟 Features / المميزات
-
-- 🤖 **Multi-Bot Management**: Add and manage multiple Telegram bots simultaneously (via `@BotFather` tokens).
-- 📢 **Channel & Group Broadcasting**: Automatically broadcast to public channels (`@channel`), private channels, and supergroups (`-100...`).
-- 🎬 **Automated VOD Notifications**: Instant notifications triggered upon VOD movie and TV episode download completion.
-- 🖼️ **Rich Media Preview**: Attach high-resolution movie/series posters or backdrops, IMDb ratings, plot summaries, and custom direct-watch buttons.
-- ⚡ **Decoupled Architecture**: Built natively for XC_VM modular system, utilizing event-driven architecture (`MediaAnalyzedEvent`).
-- 🔄 **Real-Time Testing**: Live connection and token validator directly from the admin wizard interface.
+## 📑 جدول المحتويات / Table of Contents
+- [📖 نظرة عامة على الميزة / Feature Overview](#-نظرة-عامة-على-الميزة--feature-overview)
+- [✨ المميزات الرئيسية / Key Features](#-المميزات-الرئيسية--key-features)
+- [🧙 معالج الإعداد المكون من 4 خطوات / 4-Step Wizard](#-معالج-الإعداد-المكون-من-4-خطوات--4-step-wizard)
+- [🏷️ محرك القوالب والوسوم المتغيرة / Template Engine & Tags](#-محرك-القوالب-والوسوم-المتغيرة--template-engine--tags)
+- [🏗️ الهيكلية البرمجية / Architecture & Components](#️-الهيكلية-البرمجية--architecture--components)
+- [🗄️ مخطط قاعدة البيانات / Database Schema](#️-مخطط-قاعدة-البيانات--database-schema)
+- [🌐 التعريب واللغات / Localization & Multilingual](#-التعريب-واللغات--localization--multilingual)
+- [🚀 دليل التثبيت والتفعيل / Installation Guide](#-دليل-التثبيت-والتفعيل--installation-guide)
+- [📱 دليل ربط القنوات والبوتات / Setup & Channel Linking](#-دليل-ربط-القنوات-والبوتات--setup--channel-linking)
+- [📦 بناء الحزم والتطوير / Packaging & Development](#-بناء-الحزم-والتطوير--packaging--development)
 
 ---
 
-## 📂 Module Structure / هيكلية الإضافة
+## 📖 نظرة عامة على الميزة / Feature Overview
+
+### 🇸🇦 بالعربية:
+تتيح هذه الإضافة لأصحاب السيرفرات ومديري منصات XC_VM إمكانية الربط المباشر مع تطبيق تيليجرام، بحيث يتم نشر إعلانات وتنبيهات فورية وجذابة تلقائياً داخل قنوات ومجموعات المشتركين بمجرد اكتمال فحص وتحليل أي فيلم (VOD)، حلقة مسلسل جديدة، أو إطلاق قناة بث مباشر، دون أي تدخل يدوي!
+
+تتميز الإضافة بتصميم عصري راقٍ وواجهة تفاعلية ذكية توفر:
+- **معاينة حية لشاشة الهاتف الذكي**: لمشاهدة كيف ستظهر الرسالة للمشتركين على تيليجرام قبل حفظ البوت.
+- **تخصيص فائق**: إمكانية إرفاق بوسترات الأفلام بدقة عالية، تقييم IMDb، نبذة عن القصة، وأزرار المشاهدة المباشرة.
+- **فصل مرن للمحتوى**: ربط كل بوت بقناة مختلفة أو تصفية المحتوى حسب الأقسام (مثل: بوت خاص لقنوات الرياضة، وبوت خاص بأفلام 4K).
+
+### 🇬🇧 In English:
+The **XC_VM Telegram Bot Integration Module** delivers seamless, automated broadcasting from your streaming platform directly to Telegram channels and supergroups. Whenever a movie download finishes, a TV episode is processed, or a live event stream is launched, the module automatically formats and dispatches a rich, visually compelling message with movie posters, IMDb ratings, genre tags, and direct-watch buttons.
+
+---
+
+## ✨ المميزات الرئيسية / Key Features
+
+### 1. 🤖 إدارة متعددة للبوتات (Multi-Bot Architecture)
+- دعم إضافة وتشغيل عدد غير محدود من البوتات في وقت واحد عبر توكنات `@BotFather`.
+- إمكانية تشغيل أو إيقاف أي بوت مؤقتاً عبر زر التبديل السريع (Switch Toggle) دون حذفه.
+- إمكانية إرسال إشعار تجريبي فوري (Send Test Broadcast) في أي وقت لفحص جودة التنسيق وظهور البوستر.
+
+### 2. ⚡ بث تلقائي مدفوع بالأحداث (Event-Driven Automation)
+- لا يعتمد على التكرار المجهد للموارد (No Heavy Polling)؛ حيث يستمع الموديول فوراً لحدث `MediaAnalyzedEvent` بمجرد اكتمال الفحص الفني للوسائط في المنصة عبر `VodCronJob`.
+- إرسال متزامن وآمن لجميع البوتات المهيأة لاستقبال ذلك النوع من الوسائط مع معالجة الأخطاء.
+
+### 3. 🎯 تصفية دقيقة للمحتوى والأقسام (Smart Content Filtering)
+- **أنواع المحتوى**: اختيار نشر الأفلام (VOD Movies)، حلقات المسلسلات (TV Episodes)، أو القنوات المباشرة (Live TV).
+- **نطاق الأقسام**:
+  - نشر كافة الأقسام (بدون قيود).
+  - أو تحديد أقسام مخصصة فقط (مثلاً: نشر أفلام الأكشن وقنوات الرياضة واستثناء المحتوى الآخر).
+
+### 4. 🖼️ تنسيق بصري غني ومعاينة حية (Rich Media & Mockup)
+- **أنماط الصور**:
+  - **بوستر الفيلم (Poster Image)**: عرض البوستر الرأسي عالي الجودة للفيلم أو المسلسل.
+  - **غلاف عريض (Backdrop Banner)**: عرض صورة الخلفية العريضة السينمائية.
+  - **نص فقط (Text Only)**: إرسال الرسالة كنص منسق أنيق بدون صورة لتوفير البيانات.
+- **أزرار المشاهدة التفاعلية (Inline Action Buttons)**: إضافة زر تفاعلي مدمج مثل `🎬 شاهد الآن` برابط مخصص يدعم المعرف الديناميكي `{stream_id}`.
+- **إشعارات صامتة (Silent Notifications)**: إمكانية إرسال المنشورات للقناة بدون صوت رنين لمنع إزعاج المشتركين في الأوقات المتأخرة.
+
+### 5. 📊 لوحة قياس وسجل إشعارات احترافي (KPI Cards & Logs)
+- بطاقات إحصائيات عليا تعرض:
+  - إجمالي البوتات المضافة (Total Bots).
+  - البوتات النشطة حالياً (Active Bots).
+  - عدد الإشعارات المرسلة الإجمالي (Total Broadcasts Sent).
+  - تاريخ ووقت آخر إشعار تم إرساله (Last Broadcast Time).
+- سجل تفصيلي يوثق آخر 50 عملية إرسال بحالتها (`Sent` أو `Failed`) مع توضيح سبب الفشل (مثل صلاحيات البوت أو معرف القناة).
+
+---
+
+## 🧙 معالج الإعداد المكون من 4 خطوات / 4-Step Wizard
+
+يتميز إنشاء وتعديل البوتات بمعالج خطوات عصري متناسق:
+
+| الخطوة | العنوان | الوظيفة |
+| :--- | :--- | :--- |
+| **الخطوة 1** | **ملف البوت والبيانات (Bot Profile)** | تحديد الاسم التعريفي، حالة التفعيل، وإدخال توكن البوت مع زر فحص مباشر `Verify Token` يتصل بـ Telegram API ويتأكد من صحة التوكن ويعرض اسم البوت ومُعرّفه `@username`. |
+| **الخطوة 2** | **الوجهة والقناة (Destination)** | إدخال مُعرّف القناة أو المجموعة (مثل `@MyChannel` أو `-1001928374650`)، وزر `Send Test Message` لإرسال رسالة اختبارية والتأكد من وجود صلاحية النشر، مع خيار الإشعارات الصامتة ودليل إرشادي سريع. |
+| **الخطوة 3** | **المحتوى والقواعد (Content Rules)** | تحديد نوع المحتوى المطلوب نشره تلقائياً (أفلام، مسلسلات، قنوات مباشرة)، واختيار ما إذا كان النشر شاملاً لجميع التصنيفات أو لأقسام مختارة بعينها. |
+| **الخطوة 4** | **التنسيق والمعاينة (Visual Preview)** | اختيار نوع المرفق (بوستر / غلاف عريض / نص فقط)، تخصيص زر المشاهدة، وتعديل قالب الرسالة مع شاشة هاتف ذكي تفاعلية (Live Smartphone Mockup) تعرض شكل المنشور النهائي. |
+
+---
+
+## 🏷️ محرك القوالب والوسوم المتغيرة / Template Engine & Tags
+
+يمكنك استخدام القالب الافتراضي الجاهز أو كتابة قالبك الخاص باستخدام تنسيق HTML والرموز التعبيرية والوسوم التالية:
+
+| الوسم (Tag) | الوصف | مثال للمحتوى |
+| :--- | :--- | :--- |
+| `{title}` | اسم الفيلم أو المسلسل أو القناة | `Inception` |
+| `{year}` | سنة الإنتاج | `2010` |
+| `{rating}` | تقييم العمل من 10 | `8.8` |
+| `{genre}` | التصنيف والنوع الفني | `Action, Sci-Fi` |
+| `{duration}` | مدة العرض بالساعات والدقائق | `2h 28m` |
+| `{quality}` | دقة الفيديو وترميز الصوت والصورة | `FHD (1080p) \| AVC • AAC` |
+| `{video}` | صيغة وترميز الفيديو | `H.264 / AVC` |
+| `{audio}` | صيغة وترميز الصوت | `AAC 5.1` |
+| `{category}` | اسم القسم التابع له | `Top Rated Sci-Fi` |
+| `{plot}` | قصة المحتوى ونبذة عنه | `A thief who steals corporate secrets...` |
+| `{stream_id}` | المعرف الرقمي للبث (يفيد في روابط المشاهدة) | `14092` |
+
+---
+
+## 🏗️ الهيكلية البرمجية / Architecture & Components
+
+تم بناء الموديول بنظام الحزم المعزولة (Decoupled Module Architecture) المتوافق تماماً مع نظام **XC_VM**:
 
 ```text
 Module_Telegram/
-├── module.json                  # Module manifest and auto-update configuration
-├── TelegramModule.php           # Core Module entry point, routes & DI container boot
-├── TelegramBotService.php       # Bot CRUD, KPI statistics, and Telegram API logic
-├── TelegramClient.php           # HTTP cURL wrapper for Telegram Bot API
-├── TelegramController.php       # Admin web views and JSON AJAX endpoints
-├── TelegramMessageFormatter.php # HTML caption generator (Title, Rating, Plot, Buttons)
-├── TelegramNotifier.php         # Event listener handler on VOD completion
-├── database.sql                 # Primary database schema
-├── database_drop.sql            # Teardown / cleanup on module uninstall
-└── views/                       # Modern administrative UI views & scripts
-    ├── telegram_bot.php         # 4-step wizard interface
-    ├── telegram_bot_scripts.php
-    ├── telegram_bots.php        # Bot list & KPI cards
-    └── telegram_bots_scripts.php
+├── module.json                  # ملف تعريف الإضافة وإعدادات التحديث التلقائي
+├── TelegramModule.php           # نقطة الدخول، تسجيل الخدمات في DI Container ومسارات الـ Routing
+├── TelegramTranslator.php       # كلاس الترجمة المستقل، يربط اللغات مع الكور بدون تعديل
+├── TelegramBotService.php       # إدارة البوتات، عمليات CRUD، واجهة استعلامات تيليجرام والإحصائيات
+├── TelegramClient.php           # غلاف اتصالات HTTP cURL الآمن مع خوادم Telegram Bot API
+├── TelegramController.php       # معالج صفحات لوحة الإدارة ونقاط استدعاء AJAX API (JSON)
+├── TelegramMessageFormatter.php # محرك تنسيق وتجهيز نصوص HTML والقوالب والأزرار التفاعلية
+├── TelegramNotifier.php         # مستمع الأحداث (Event Subscriber) لبث المحتوى فور انتهاء تحليله
+├── database.sql                 # جدول بيانات البوتات وسجلات الإشعارات
+├── database_drop.sql            # تنظيف الجداول عند إلغاء تثبيت الإضافة
+├── lang/                        # حزم اللغات المدمجة ذاتياً
+│   ├── ar.ini                   # ملف الترجمة العربي الكامل (132 مفتاح)
+│   └── en.ini                   # ملف الترجمة الإنجليزي الكامل (132 مفتاح)
+├── views/                       # واجهات المستخدم ولوحة التحكم
+│   ├── telegram_bots.php        # صفحة عرض قائمة البوتات وكروت الإحصائيات وسجل الإرسال
+│   ├── telegram_bots_scripts.php# العمليات التفاعلية للقائمة (البحث، التبديل، الحذف، الاختبار)
+│   ├── telegram_bot.php         # معالج إضافة وتعديل البوت (Wizard) ومعاينة شاشة الهاتف
+│   └── telegram_bot_scripts.php # سكربتات المعالج واختبار التوكنات وتحديث المعاينة الحية
+├── Makefile                     # سكريبت أتمتة بناء حزم التثبيت ZIP
+└── README.md                    # التوثيق الشامل للإضافة
 ```
 
 ---
 
-## 🚀 Installation & Deployment / التثبيت والتطبيق
+## 🗄️ مخطط قاعدة البيانات / Database Schema
 
-### Manual Installation:
-1. Place the archive in `modules_archives/telegram_3b6df.zip`.
-2. Extract to `Modules/telegram_3b6df/`.
-3. Enable in `config/modules.php`:
+تعتمد الإضافة على جدولين رئيسيين في قاعدة بيانات النظام:
+
+### 1. جدول البوتات `telegram_bots`:
+- `id`: المعرف الفريد التلقائي للبوت.
+- `name`: الاسم التعريفي للبوت.
+- `bot_token`: توكن البوت الصادر من `@BotFather`.
+- `bot_username`: اسم مستخدم البوت على تيليجرام.
+- `chat_id`: معرف القناة أو المحادثة المستهدفة.
+- `status`: حالة التشغيل (`1` نشط، `0` متوقف مؤقتاً).
+- `content_types`: مصفوفة JSON بأنواع المحتوى المسموحة (`movies`, `episodes`, `live`).
+- `categories`: مصفوفة JSON بمعرفات الأقسام المسموح بها (أو فارغة للكل).
+- `image_type`: نوع الصورة المرفقة (`poster`, `backdrop`, `none`).
+- `custom_template`: قالب نص الرسالة المخصص.
+- `include_button`: تفعيل زر المشاهدة التفاعلي (`0` أو `1`).
+- `button_text`: نص الزر المدمج.
+- `button_url`: رابط الزر المدمج.
+- `silent_notification`: إرسال الإشعار بدون صوت (`0` أو `1`).
+- `total_sent`: إجمالي عدد الإشعارات المرسلة بنجاح.
+- `last_sent_at`: الطابع الزمني لآخر إشعار مرسل.
+- `last_error`: تفاصيل آخر خطأ حدث أثناء الإرسال.
+
+### 2. جدول سجلات البث `telegram_logs`:
+- `id`: معرف السجل.
+- `bot_id`: معرف البوت المنفذ للإرسال.
+- `stream_id`: معرف البث أو المحتوى.
+- `content_type`: نوع الوسائط (`movie`, `episode`, `live`).
+- `title`: اسم المادة التي تم إرسالها.
+- `chat_id`: القناة التي استقبلت المنشور.
+- `status`: حالة الإرسال (`sent` أو `failed`).
+- `details`: تفاصيل النتيجة أو رسالة الخطأ من سيرفرات تيليجرام.
+- `created_at`: وقت وتاريخ الإرسال.
+
+---
+
+## 🌐 التعريب واللغات / Localization & Multilingual
+
+- الإضافة مزودة بنظام تعريب متكامل ومستقل بنسبة **100%**.
+- تحتوي على ملفين لغويين في مجلد `lang/` يشملان **132 مفتاح ترجمة**:
+  - `lang/ar.ini`: صياغة عربية احترافية خالية من أي رموز `_` وتراعي مصطلحات البث والإعلام والتقنية.
+  - `lang/en.ini`: صياغة إنجليزية واضحة ومطابقة لمعايير لوحات التحكم العالمية.
+- يتم التبديل بين اللغات تلقائياً حسب اللغة المحددة في لوحة تحكم **XC_VM** دون الحاجة لأي إعداد يدوي.
+- **التوافق التام مع الكور**: لا تتطلب الإضافة تعديل ملفات النظام الأساسية، حيث يعتمد كلاس `TelegramTranslator` على محرك داخلي ذاتي الشفاء يقرأ مفاتيح الموديول بسلاسة.
+
+---
+
+## 🚀 دليل التثبيت والتفعيل / Installation Guide
+
+### الطريقة الأولى: عبر حزمة ZIP الجاهزة
+1. حمّل حزمة الموديول `telegram_3b6df.zip`.
+2. ضع الحزمة في مسار حزم المنصة: `/home/xc_vm/modules_archives/telegram_3b6df.zip`.
+3. فك الضغط إلى مجلد الموديولات:
+   ```bash
+   mkdir -p /home/xc_vm/Modules/telegram_3b6df
+   unzip -q /home/xc_vm/modules_archives/telegram_3b6df.zip -d /home/xc_vm/Modules/telegram_3b6df/
+   ```
+4. فعّل الإضافة داخل ملف الإعدادات `/home/xc_vm/config/modules.php`:
    ```php
    'telegram' => [
        'installed_version' => '1.0.0',
        'source' => 'local',
+       'enabled' => true,
    ],
    ```
-4. Run migrations:
+5. قم بتطبيق جداول قاعدة البيانات:
    ```bash
-   php console.php status 1
+   mysql -u root xc_vm < /home/xc_vm/Modules/telegram_3b6df/database.sql
    ```
 
+### الطريقة الثانية: عبر Git Clone مباشرة
+```bash
+cd /home/xc_vm/Modules
+git clone https://github.com/Rosmi720/Module_Telegram.git telegram_3b6df
+mysql -u root xc_vm < telegram_3b6df/database.sql
+```
+
 ---
 
-## 🛠️ Developer & Release Management
+## 📱 دليل ربط القنوات والبوتات / Setup & Channel Linking
 
-To package the module into a production archive:
+لضمان عمل البث بنجاح، اتبع الخطوات السريعة التالية:
+
+1. **إنشاء البوت والحصول على التوكن**:
+   - افتح محادثة مع `@BotFather` على تيليجرام.
+   - أرسل الأمر `/newbot` ثم اختر اسماً للبوت واسم مستخدم ينتهي بـ `bot` (مثل `MyCinema_bot`).
+   - انسخ الـ **HTTP API Token** الذي يزودك به (يكون شبيهاً بـ `7123456789:AAHk...`).
+
+2. **تجهيز القناة أو المجموعة**:
+   - افتح القناة أو المجموعة المستهدفة في تيليجرام.
+   - ادخل إلى إعدادات القناة ➜ **المشرفون (Administrators)**.
+   - اضغط **إضافة مشرف (Add Admin)**، وابحث عن اسم مستخدم البوت الخاص بك وقم بإضافته.
+   - تأكد من منحه صلاحية **نشر الرسائل (Post Messages)**.
+
+3. **الحصول على معرف القناة (Chat ID)**:
+   - **للقنوات العامة**: استخدم المعرف المسبوق بعلامة `@` مباشرة (مثال: `@MyMoviesChannel`).
+   - **للقنوات والمجموعات الخاصة**: المعرف الرقمي يبدأ بـ `-100` (مثال: `-1001928374650`). يمكنك معرفته بإعادة توجيه أي رسالة من القناة إلى بوت مثل `@userinfobot` أو `@getmyid_bot`.
+
+4. **إجراء الاختبار من لوحة التحكم**:
+   - ادخل إلى لوحة تحكم XC_VM ➜ **بوتات تيليجرام** ➜ **إضافة بوت جديد**.
+   - أدخل التوكن واضغط `التحقق من التوكن`.
+   - أدخل معرف القناة واضغط `إرسال رسالة تجريبية`.
+   - بمجرد وصول الرسالة إلى قناتك، أكمل الخطوتين 3 و 4 واضغط `حفظ وتفعيل البوت`.
+
+---
+
+## 📦 بناء الحزم والتطوير / Packaging & Development
+
+إذا قمت بإجراء تعديلات تطويرية وترغب في إعادة تحزيم الموديول إلى ملف ZIP جاهز للنشر والتوزيع:
+
 ```bash
+cd /home/Module_Telegram
 make zip
 ```
-Or use the global CLI tool:
-```bash
-xc-module-telegram package
-```
+
+سيتم إنشاء الأرشيف النهائي تلقائياً في المسار:
+`/home/xc_vm/modules_archives/telegram_3b6df.zip`
 
 ---
-*Developed for XC_VM IPTV Platform.*
+
+## 📄 الترخيص والدعم / License & Support
+
+- **الترخيص**: مرخص تحت رخصة [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html).
+- **التطوير**: تم التطوير خصيصاً لمنصة إدارة البث التلفزيوني **XC_VM**.
+- **المستودع الرسمي**: [https://github.com/Rosmi720/Module_Telegram](https://github.com/Rosmi720/Module_Telegram)
