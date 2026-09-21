@@ -10,7 +10,7 @@
  * 4. Visual Formatting, Media Type & Live Telegram Mockup Preview
  */
 
-$language = (!empty($language) && class_exists($language)) ? $language : \XcVm\Core\Localization\Translator::class;
+$language = (!empty($language) && class_exists($language)) ? $language : \XcVm\Module\Telegram\TelegramTranslator::class;
 $rBot = $bot ?? null;
 $rIsEdit = !empty($isEdit);
 $rCategories = $categories ?? ['movies' => [], 'series' => [], 'live' => []];
@@ -41,13 +41,13 @@ $hasCustomCats = !empty($cats);
         <div>
             <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
                 <i class="icon-base ti tabler-brand-telegram text-primary fs-2"></i>
-                <span><?= $rIsEdit ? 'Edit Telegram Bot: ' . htmlspecialchars($name) : 'Add New Telegram Bot'; ?></span>
+                <span><?= $rIsEdit ? $language::get('edit_telegram_bot') . ': ' . htmlspecialchars($name) : $language::get('add_new_telegram_bot'); ?></span>
             </h4>
-            <p class="text-muted mb-0">Follow the 4-step wizard to setup credentials, test channel permissions, select content, and style broadcasts.</p>
+            <p class="text-muted mb-0"><?= $language::get('telegram_bot_wizard_desc'); ?></p>
         </div>
         <a href="telegram_bots" class="btn btn-outline-secondary d-flex align-items-center gap-1 shadow-sm">
             <i class="icon-base ti tabler-arrow-left"></i>
-            <span>Back to Bots</span>
+            <span><?= $language::get('back_to_bots'); ?></span>
         </a>
     </div>
 
@@ -58,8 +58,8 @@ $hasCustomCats = !empty($cats);
                 <div class="step-indicator active d-flex align-items-center gap-2" data-step="1">
                     <span class="step-number badge rounded-pill bg-primary fs-7">1</span>
                     <div class="step-label">
-                        <span class="fw-bold d-block fs-7">Bot Profile</span>
-                        <span class="text-muted fs-8">Credentials & Token</span>
+                        <span class="fw-bold d-block fs-7"><?= $language::get('bot_profile'); ?></span>
+                        <span class="text-muted fs-8"><?= $language::get('credentials_and_token'); ?></span>
                     </div>
                 </div>
                 <div class="step-separator d-none d-md-block flex-grow-1 mx-3 border-top"></div>
@@ -67,8 +67,8 @@ $hasCustomCats = !empty($cats);
                 <div class="step-indicator d-flex align-items-center gap-2 text-muted" data-step="2">
                     <span class="step-number badge rounded-pill bg-label-secondary fs-7">2</span>
                     <div class="step-label">
-                        <span class="fw-bold d-block fs-7">Destination</span>
-                        <span class="text-muted fs-8">Target Channel / Chat</span>
+                        <span class="fw-bold d-block fs-7"><?= $language::get('destination'); ?></span>
+                        <span class="text-muted fs-8"><?= $language::get('target_channel_chat'); ?></span>
                     </div>
                 </div>
                 <div class="step-separator d-none d-md-block flex-grow-1 mx-3 border-top"></div>
@@ -76,8 +76,8 @@ $hasCustomCats = !empty($cats);
                 <div class="step-indicator d-flex align-items-center gap-2 text-muted" data-step="3">
                     <span class="step-number badge rounded-pill bg-label-secondary fs-7">3</span>
                     <div class="step-label">
-                        <span class="fw-bold d-block fs-7">Content & Rules</span>
-                        <span class="text-muted fs-8">Movies, Episodes & Filters</span>
+                        <span class="fw-bold d-block fs-7"><?= $language::get('content_and_rules'); ?></span>
+                        <span class="text-muted fs-8"><?= $language::get('content_rules_desc'); ?></span>
                     </div>
                 </div>
                 <div class="step-separator d-none d-md-block flex-grow-1 mx-3 border-top"></div>
@@ -85,8 +85,8 @@ $hasCustomCats = !empty($cats);
                 <div class="step-indicator d-flex align-items-center gap-2 text-muted" data-step="4">
                     <span class="step-number badge rounded-pill bg-label-secondary fs-7">4</span>
                     <div class="step-label">
-                        <span class="fw-bold d-block fs-7">Visual Preview</span>
-                        <span class="text-muted fs-8">Styling & Mockup</span>
+                        <span class="fw-bold d-block fs-7"><?= $language::get('visual_preview'); ?></span>
+                        <span class="text-muted fs-8"><?= $language::get('visual_preview_desc'); ?></span>
                     </div>
                 </div>
             </div>
@@ -103,36 +103,36 @@ $hasCustomCats = !empty($cats);
                 <div class="card-header bg-transparent border-bottom py-3">
                     <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
                         <i class="icon-base ti tabler-robot text-primary"></i>
-                        <span>Step 1: Bot Profile & Credentials</span>
+                        <span><?= $language::get('step_1_title'); ?></span>
                     </h5>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-4">
                         <div class="col-12 col-md-6">
-                            <label class="form-label fw-semibold" for="bot_name">Bot Friendly Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="bot_name" name="name" placeholder="e.g. Main Channel Movie Releases" value="<?= htmlspecialchars($name); ?>" required>
-                            <small class="text-muted">A clear, descriptive name for identifying this bot in your panel.</small>
+                            <label class="form-label fw-semibold" for="bot_name"><?= $language::get('bot_friendly_name'); ?> <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="bot_name" name="name" placeholder="<?= htmlspecialchars($language::get('bot_name_placeholder')); ?>" value="<?= htmlspecialchars($name); ?>" required>
+                            <small class="text-muted"><?= $language::get('bot_name_help'); ?></small>
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label fw-semibold" for="bot_status">Bot Status</label>
+                            <label class="form-label fw-semibold" for="bot_status"><?= $language::get('bot_status'); ?></label>
                             <select class="form-select" id="bot_status" name="status">
-                                <option value="1" <?= $status === 1 ? 'selected' : ''; ?>>Active (Broadcasting Enabled)</option>
-                                <option value="0" <?= $status === 0 ? 'selected' : ''; ?>>Paused (Broadcasting Disabled)</option>
+                                <option value="1" <?= $status === 1 ? 'selected' : ''; ?>><?= $language::get('active_broadcasting_enabled'); ?></option>
+                                <option value="0" <?= $status === 0 ? 'selected' : ''; ?>><?= $language::get('paused_broadcasting_disabled'); ?></option>
                             </select>
-                            <small class="text-muted">You can pause or activate broadcasting anytime.</small>
+                            <small class="text-muted"><?= $language::get('bot_status_help'); ?></small>
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label fw-semibold" for="bot_token">Telegram Bot Token <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold" for="bot_token"><?= $language::get('telegram_bot_token'); ?> <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="icon-base ti tabler-key"></i></span>
                                 <input type="text" class="form-control" id="bot_token" name="bot_token" placeholder="e.g. 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ" value="<?= htmlspecialchars($token); ?>" required>
                                 <button type="button" class="btn btn-outline-primary" id="btnVerifyToken">
-                                    <i class="icon-base ti tabler-check me-1"></i> Verify Token
+                                    <i class="icon-base ti tabler-check me-1"></i> <?= $language::get('verify_token'); ?>
                                 </button>
                             </div>
                             <small class="text-muted d-block mt-1">
-                                Obtained from <a href="https://t.me/BotFather" target="_blank" class="fw-semibold">@BotFather</a> on Telegram by running <code>/newbot</code>.
+                                <?= $language::get('token_obtained_from'); ?>
                             </small>
 
                             <!-- Live Verified Card -->
@@ -145,7 +145,7 @@ $hasCustomCats = !empty($cats);
                                         <span class="fw-bold d-block" id="verifiedBotName"><?= htmlspecialchars($name ?: 'Verified Bot'); ?></span>
                                         <span class="fs-7 text-muted" id="verifiedBotUsername">@<?= htmlspecialchars($username); ?></span>
                                     </div>
-                                    <span class="badge bg-success rounded-pill">Token Verified</span>
+                                    <span class="badge bg-success rounded-pill"><?= $language::get('token_verified'); ?></span>
                                 </div>
                             </div>
                         </div>
@@ -153,7 +153,7 @@ $hasCustomCats = !empty($cats);
                 </div>
                 <div class="card-footer bg-transparent border-top d-flex justify-content-end p-3">
                     <button type="button" class="btn btn-primary js-next-step" data-target="2">
-                        <span>Next: Target Channel</span>
+                        <span><?= $language::get('next_target_channel'); ?></span>
                         <i class="icon-base ti tabler-arrow-right ms-1"></i>
                     </button>
                 </div>
@@ -166,22 +166,22 @@ $hasCustomCats = !empty($cats);
                 <div class="card-header bg-transparent border-bottom py-3">
                     <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
                         <i class="icon-base ti tabler-broadcast text-primary"></i>
-                        <span>Step 2: Target Channel or Group</span>
+                        <span><?= $language::get('step_2_title'); ?></span>
                     </h5>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-4">
                         <div class="col-12 col-md-7">
-                            <label class="form-label fw-semibold" for="chat_id">Target Channel or Chat ID <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold" for="chat_id"><?= $language::get('chat_id_label'); ?> <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="icon-base ti tabler-at"></i></span>
-                                <input type="text" class="form-control" id="chat_id" name="chat_id" placeholder="e.g. @MyMoviesChannel or -1001928374650" value="<?= htmlspecialchars($chatId); ?>" required>
+                                <input type="text" class="form-control" id="chat_id" name="chat_id" placeholder="<?= htmlspecialchars($language::get('chat_id_placeholder')); ?>" value="<?= htmlspecialchars($chatId); ?>" required>
                                 <button type="button" class="btn btn-outline-success" id="btnTestChat">
-                                    <i class="icon-base ti tabler-send me-1"></i> Send Test Message
+                                    <i class="icon-base ti tabler-send me-1"></i> <?= $language::get('send_test_message'); ?>
                                 </button>
                             </div>
                             <small class="text-muted d-block mt-1">
-                                Public channels use <code>@channelusername</code>. Private channels use numerical IDs starting with <code>-100...</code>.
+                                <?= $language::get('chat_id_help'); ?>
                             </small>
 
                             <!-- Test Chat Result alert -->
@@ -190,9 +190,9 @@ $hasCustomCats = !empty($cats);
                             <div class="form-check form-switch mt-4">
                                 <input class="form-check-input" type="checkbox" id="silent_notification" name="silent_notification" value="1" <?= $silent ? 'checked' : ''; ?>>
                                 <label class="form-check-label fw-semibold" for="silent_notification">
-                                    Silent Notifications
+                                    <?= $language::get('silent_notifications'); ?>
                                 </label>
-                                <small class="text-muted d-block">Subscribers will receive the notification without sound alerts.</small>
+                                <small class="text-muted d-block"><?= $language::get('silent_notifications_help'); ?></small>
                             </div>
                         </div>
 
@@ -200,14 +200,14 @@ $hasCustomCats = !empty($cats);
                         <div class="col-12 col-md-5">
                             <div class="border rounded-3 p-3 bg-light-subtle h-100">
                                 <h6 class="fw-bold mb-2 d-flex align-items-center gap-1 text-primary">
-                                    <i class="icon-base ti tabler-info-circle"></i> Quick Setup Guide
+                                    <i class="icon-base ti tabler-info-circle"></i> <?= $language::get('quick_setup_guide'); ?>
                                 </h6>
                                 <ol class="ps-3 mb-0 fs-7 text-muted lh-lg">
-                                    <li>Open your target Telegram Channel or Group.</li>
-                                    <li>Go to <b>Channel Settings ➜ Administrators</b>.</li>
-                                    <li>Click <b>Add Administrator</b> and search for your bot.</li>
-                                    <li>Grant the <b>"Post Messages"</b> permission.</li>
-                                    <li>Type your channel's public <code>@username</code> or private channel ID and click <b>"Send Test Message"</b> above!</li>
+                                    <li><?= $language::get('tg_setup_step_1'); ?></li>
+                                    <li><?= $language::get('tg_setup_step_2'); ?></li>
+                                    <li><?= $language::get('tg_setup_step_3'); ?></li>
+                                    <li><?= $language::get('tg_setup_step_4'); ?></li>
+                                    <li><?= $language::get('tg_setup_step_5'); ?></li>
                                 </ol>
                             </div>
                         </div>
@@ -216,10 +216,10 @@ $hasCustomCats = !empty($cats);
                 <div class="card-footer bg-transparent border-top d-flex justify-content-between p-3">
                     <button type="button" class="btn btn-outline-secondary js-prev-step" data-target="1">
                         <i class="icon-base ti tabler-arrow-left me-1"></i>
-                        <span>Back</span>
+                        <span><?= $language::get('previous_step'); ?></span>
                     </button>
                     <button type="button" class="btn btn-primary js-next-step" data-target="3">
-                        <span>Next: Content & Rules</span>
+                        <span><?= $language::get('next_content_rules'); ?></span>
                         <i class="icon-base ti tabler-arrow-right ms-1"></i>
                     </button>
                 </div>
@@ -232,23 +232,23 @@ $hasCustomCats = !empty($cats);
                 <div class="card-header bg-transparent border-bottom py-3">
                     <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
                         <i class="icon-base ti tabler-category text-primary"></i>
-                        <span>Step 3: Content Types & Category Filtering</span>
+                        <span><?= $language::get('step_3_title'); ?></span>
                     </h5>
                 </div>
                 <div class="card-body p-4">
                     <!-- Content Types Selection -->
-                    <label class="form-label fw-bold mb-3 d-block">1. Select Content Types to Broadcast:</label>
+                    <label class="form-label fw-bold mb-3 d-block"><?= $language::get('select_content_types'); ?></label>
                     <div class="row g-3 mb-4">
                         <div class="col-12 col-md-4">
                             <div class="card border p-3 h-100 content-type-card cursor-pointer">
                                 <div class="form-check form-switch m-0">
                                     <input class="form-check-input" type="checkbox" id="type_movies" name="type_movies" value="1" <?= in_array('movies', $types, true) || $notifyMovie ? 'checked' : ''; ?>>
                                     <label class="form-check-label fw-bold d-block ms-2" for="type_movies">
-                                        🎬 Movies (VOD)
+                                        🎬 <?= $language::get('broadcasting_movies'); ?>
                                     </label>
                                 </div>
                                 <p class="text-muted fs-7 mt-2 mb-0 ms-4">
-                                    Broadcast automatically when a movie has finished downloading and is verified by the system.
+                                    <?= $language::get('broadcast_movies_help'); ?>
                                 </p>
                             </div>
                         </div>
@@ -257,11 +257,11 @@ $hasCustomCats = !empty($cats);
                                 <div class="form-check form-switch m-0">
                                     <input class="form-check-input" type="checkbox" id="type_episodes" name="type_episodes" value="1" <?= in_array('episodes', $types, true) || $notifyEpisode ? 'checked' : ''; ?>>
                                     <label class="form-check-label fw-bold d-block ms-2" for="type_episodes">
-                                        📺 TV Series Episodes
+                                        📺 <?= $language::get('broadcasting_episodes'); ?>
                                     </label>
                                 </div>
                                 <p class="text-muted fs-7 mt-2 mb-0 ms-4">
-                                    Broadcast automatically whenever new TV series episodes are encoded or imported.
+                                    <?= $language::get('broadcast_episodes_help'); ?>
                                 </p>
                             </div>
                         </div>
@@ -270,29 +270,29 @@ $hasCustomCats = !empty($cats);
                                 <div class="form-check form-switch m-0">
                                     <input class="form-check-input" type="checkbox" id="type_live" name="type_live" value="1" <?= in_array('live', $types, true) || $notifyLive ? 'checked' : ''; ?>>
                                     <label class="form-check-label fw-bold d-block ms-2" for="type_live">
-                                        📡 Live Streams
+                                        📡 <?= $language::get('broadcasting_live'); ?>
                                     </label>
                                 </div>
                                 <p class="text-muted fs-7 mt-2 mb-0 ms-4">
-                                    Broadcast when new live TV channels or event streams are created and launched.
+                                    <?= $language::get('broadcast_live_help'); ?>
                                 </p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Category Scope -->
-                    <label class="form-label fw-bold mb-3 d-block">2. Category Filtering Scope:</label>
+                    <label class="form-label fw-bold mb-3 d-block"><?= $language::get('category_filtering_scope'); ?></label>
                     <div class="d-flex gap-4 mb-3">
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="categories_mode" id="catModeAll" value="all" <?= !$hasCustomCats ? 'checked' : ''; ?>>
                             <label class="form-check-label fw-semibold" for="catModeAll">
-                                Broadcast All Categories (No Restrictions)
+                                <?= $language::get('broadcast_all_categories'); ?>
                             </label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="categories_mode" id="catModeCustom" value="custom" <?= $hasCustomCats ? 'checked' : ''; ?>>
                             <label class="form-check-label fw-semibold" for="catModeCustom">
-                                Specific Categories Only
+                                <?= $language::get('specific_categories_only'); ?>
                             </label>
                         </div>
                     </div>
@@ -300,17 +300,17 @@ $hasCustomCats = !empty($cats);
                     <!-- Custom Category Selection Box -->
                     <div id="categorySelectionContainer" class="border rounded-3 p-3 bg-light-subtle <?= $hasCustomCats ? '' : 'd-none'; ?>">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="fs-7 fw-bold text-muted">Select permitted categories:</span>
+                            <span class="fs-7 fw-bold text-muted"><?= $language::get('select_permitted_categories'); ?></span>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-xs btn-outline-primary" id="btnSelectAllCats">Select All</button>
-                                <button type="button" class="btn btn-xs btn-outline-secondary" id="btnDeselectAllCats">Clear Selection</button>
+                                <button type="button" class="btn btn-xs btn-outline-primary" id="btnSelectAllCats"><?= $language::get('select_all'); ?></button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary" id="btnDeselectAllCats"><?= $language::get('clear_selection'); ?></button>
                             </div>
                         </div>
 
                         <!-- Movies Categories -->
                         <?php if (!empty($rCategories['movies'])): ?>
                             <div class="mb-3">
-                                <span class="fw-bold fs-7 d-block mb-2 text-primary">🎬 Movies Categories</span>
+                                <span class="fw-bold fs-7 d-block mb-2 text-primary">🎬 <?= $language::get('movies_categories'); ?></span>
                                 <div class="row g-2">
                                     <?php foreach ($rCategories['movies'] as $cat): ?>
                                         <div class="col-6 col-md-4 col-lg-3">
@@ -329,7 +329,7 @@ $hasCustomCats = !empty($cats);
                         <!-- Series Categories -->
                         <?php if (!empty($rCategories['series'])): ?>
                             <div class="mb-3">
-                                <span class="fw-bold fs-7 d-block mb-2 text-info">📺 Series Categories</span>
+                                <span class="fw-bold fs-7 d-block mb-2 text-info">📺 <?= $language::get('series_categories'); ?></span>
                                 <div class="row g-2">
                                     <?php foreach ($rCategories['series'] as $cat): ?>
                                         <div class="col-6 col-md-4 col-lg-3">
@@ -348,7 +348,7 @@ $hasCustomCats = !empty($cats);
                         <!-- Live Categories -->
                         <?php if (!empty($rCategories['live'])): ?>
                             <div>
-                                <span class="fw-bold fs-7 d-block mb-2 text-success">📡 Live TV Categories</span>
+                                <span class="fw-bold fs-7 d-block mb-2 text-success">📡 <?= $language::get('live_tv_categories'); ?></span>
                                 <div class="row g-2">
                                     <?php foreach ($rCategories['live'] as $cat): ?>
                                         <div class="col-6 col-md-4 col-lg-3">
@@ -368,10 +368,10 @@ $hasCustomCats = !empty($cats);
                 <div class="card-footer bg-transparent border-top d-flex justify-content-between p-3">
                     <button type="button" class="btn btn-outline-secondary js-prev-step" data-target="2">
                         <i class="icon-base ti tabler-arrow-left me-1"></i>
-                        <span>Back</span>
+                        <span><?= $language::get('previous_step'); ?></span>
                     </button>
                     <button type="button" class="btn btn-primary js-next-step" data-target="4">
-                        <span>Next: Visual Styling & Preview</span>
+                        <span><?= $language::get('next_visual_styling'); ?></span>
                         <i class="icon-base ti tabler-arrow-right ms-1"></i>
                     </button>
                 </div>
@@ -384,7 +384,7 @@ $hasCustomCats = !empty($cats);
                 <div class="card-header bg-transparent border-bottom py-3">
                     <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
                         <i class="icon-base ti tabler-palette text-primary"></i>
-                        <span>Step 4: Visual Formatting & Telegram Live Mockup</span>
+                        <span><?= $language::get('step_4_title'); ?></span>
                     </h5>
                 </div>
                 <div class="card-body p-4">
@@ -392,30 +392,27 @@ $hasCustomCats = !empty($cats);
                         <!-- Left column: Settings -->
                         <div class="col-12 col-lg-7">
                             <!-- Image Attachment Choice -->
-                            <label class="form-label fw-bold mb-2">Media Attachment:</label>
+                            <label class="form-label fw-bold mb-2"><?= $language::get('media_attachment'); ?></label>
                             <div class="row g-3 mb-4">
                                 <div class="col-4">
                                     <label class="card border p-3 text-center cursor-pointer media-choice-card <?= $imageType === 'poster' ? 'border-primary bg-label-primary' : ''; ?>" for="img_poster">
                                         <input class="form-check-input d-none" type="radio" name="image_type" id="img_poster" value="poster" <?= $imageType === 'poster' ? 'checked' : ''; ?>>
                                         <i class="icon-base ti tabler-photo fs-2 d-block mb-1"></i>
-                                        <span class="fw-bold fs-7 d-block">Poster</span>
-                                        <small class="text-muted fs-8">Portrait</small>
+                                        <span class="fw-bold fs-7 d-block"><?= $language::get('poster_image'); ?></span>
                                     </label>
                                 </div>
                                 <div class="col-4">
                                     <label class="card border p-3 text-center cursor-pointer media-choice-card <?= $imageType === 'backdrop' ? 'border-primary bg-label-primary' : ''; ?>" for="img_backdrop">
                                         <input class="form-check-input d-none" type="radio" name="image_type" id="img_backdrop" value="backdrop" <?= $imageType === 'backdrop' ? 'checked' : ''; ?>>
                                         <i class="icon-base ti tabler-wallpaper fs-2 d-block mb-1"></i>
-                                        <span class="fw-bold fs-7 d-block">Backdrop</span>
-                                        <small class="text-muted fs-8">Landscape</small>
+                                        <span class="fw-bold fs-7 d-block"><?= $language::get('backdrop_banner'); ?></span>
                                     </label>
                                 </div>
                                 <div class="col-4">
                                     <label class="card border p-3 text-center cursor-pointer media-choice-card <?= $imageType === 'none' ? 'border-primary bg-label-primary' : ''; ?>" for="img_none">
                                         <input class="form-check-input d-none" type="radio" name="image_type" id="img_none" value="none" <?= $imageType === 'none' ? 'checked' : ''; ?>>
                                         <i class="icon-base ti tabler-file-text fs-2 d-block mb-1"></i>
-                                        <span class="fw-bold fs-7 d-block">Text Only</span>
-                                        <small class="text-muted fs-8">No Media</small>
+                                        <span class="fw-bold fs-7 d-block"><?= $language::get('text_only_no_image'); ?></span>
                                     </label>
                                 </div>
                             </div>
@@ -425,17 +422,17 @@ $hasCustomCats = !empty($cats);
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" id="include_button" name="include_button" value="1" <?= $includeButton ? 'checked' : ''; ?>>
                                     <label class="form-check-label fw-bold ms-2" for="include_button">
-                                        Include Inline Telegram Button
+                                        <?= $language::get('inline_action_button'); ?>
                                     </label>
                                 </div>
                                 <div id="buttonOptionsContainer" class="<?= $includeButton ? '' : 'd-none'; ?>">
                                     <div class="row g-2">
                                         <div class="col-12 col-md-5">
-                                            <label class="form-label fs-7">Button Text</label>
+                                            <label class="form-label fs-7"><?= $language::get('button_label'); ?></label>
                                             <input type="text" class="form-control form-control-sm" id="button_text" name="button_text" placeholder="🎬 Watch Now" value="<?= htmlspecialchars($buttonText); ?>">
                                         </div>
                                         <div class="col-12 col-md-7">
-                                            <label class="form-label fs-7">Button URL (supports <code>{stream_id}</code>)</label>
+                                            <label class="form-label fs-7"><?= $language::get('button_url'); ?> (supports <code>{stream_id}</code>)</label>
                                             <input type="text" class="form-control form-control-sm" id="button_url" name="button_url" placeholder="https://myportal.com/play?id={stream_id}" value="<?= htmlspecialchars($buttonUrl); ?>">
                                         </div>
                                     </div>
@@ -445,12 +442,12 @@ $hasCustomCats = !empty($cats);
                             <!-- Custom Template Option -->
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <label class="form-label fw-bold m-0" for="custom_template">Message Caption Template (Optional):</label>
+                                    <label class="form-label fw-bold m-0" for="custom_template"><?= $language::get('message_template'); ?></label>
                                     <button type="button" class="btn btn-xs btn-outline-secondary" id="btnResetTemplate">Use Standard Template</button>
                                 </div>
                                 <textarea class="form-control font-monospace fs-7" id="custom_template" name="custom_template" rows="5" placeholder="Leave blank to use the built-in rich template, or write custom HTML with emojis..."><?= htmlspecialchars($customTemplate); ?></textarea>
                                 <div class="mt-2 d-flex flex-wrap gap-1">
-                                    <span class="fs-8 text-muted align-self-center me-1">Available Tags:</span>
+                                    <span class="fs-8 text-muted align-self-center me-1"><?= $language::get('available_tags'); ?>:</span>
                                     <button type="button" class="badge bg-label-secondary border-0 js-tag-chip" data-tag="{title}">{title}</button>
                                     <button type="button" class="badge bg-label-secondary border-0 js-tag-chip" data-tag="{year}">{year}</button>
                                     <button type="button" class="badge bg-label-secondary border-0 js-tag-chip" data-tag="{rating}">{rating}</button>
@@ -467,7 +464,7 @@ $hasCustomCats = !empty($cats);
 
                         <!-- Right column: Live Telegram Smartphone Mockup -->
                         <div class="col-12 col-lg-5">
-                            <label class="form-label fw-bold mb-2">Live Broadcast Preview:</label>
+                            <label class="form-label fw-bold mb-2"><?= $language::get('live_telegram_preview'); ?>:</label>
                             <div class="telegram-phone-mockup border rounded-4 shadow-sm overflow-hidden bg-body-tertiary">
                                 <!-- Telegram Header Bar -->
                                 <div class="bg-primary text-white p-3 d-flex align-items-center gap-3">
@@ -518,12 +515,12 @@ $hasCustomCats = !empty($cats);
                 <div class="card-footer bg-transparent border-top d-flex justify-content-between p-3">
                     <button type="button" class="btn btn-outline-secondary js-prev-step" data-target="3">
                         <i class="icon-base ti tabler-arrow-left me-1"></i>
-                        <span>Back</span>
+                        <span><?= $language::get('previous_step'); ?></span>
                     </button>
                     <button type="submit" class="btn btn-success d-flex align-items-center gap-1 shadow-sm" id="btnSaveBot">
                         <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                         <i class="icon-base ti tabler-device-floppy"></i>
-                        <span><?= $rIsEdit ? 'Update Telegram Bot' : 'Save & Activate Bot'; ?></span>
+                        <span><?= $rIsEdit ? $language::get('edit_telegram_bot') : $language::get('save_and_activate_bot'); ?></span>
                     </button>
                 </div>
             </div>

@@ -7,7 +7,7 @@
  * real-time status toggles, deletion, metrics KPIs, and broadcast logs modal.
  */
 
-$language = (!empty($language) && class_exists($language)) ? $language : \XcVm\Core\Localization\Translator::class;
+$language = (!empty($language) && class_exists($language)) ? $language : \XcVm\Module\Telegram\TelegramTranslator::class;
 $rBots = $bots ?? [];
 $rStats = $stats ?? ['total_bots' => 0, 'active_bots' => 0, 'total_sent' => 0, 'last_sent_at' => null];
 $rLogs = $recentLogs ?? [];
@@ -139,7 +139,7 @@ $rLogs = $recentLogs ?? [];
                     <div>
                         <span class="text-muted fs-7 d-block"><?= $language::get('last_broadcast'); ?></span>
                         <span class="fw-semibold text-truncate d-block fs-7">
-                            <?= !empty($rStats['last_sent_at']) ? date('M d, H:i', (int)$rStats['last_sent_at']) : 'Never'; ?>
+                            <?= !empty($rStats['last_sent_at']) ? date('M d, H:i', (int)$rStats['last_sent_at']) : $language::get('never'); ?>
                         </span>
                     </div>
                 </div>
@@ -154,13 +154,13 @@ $rLogs = $recentLogs ?? [];
                 <div class="col-12 col-md-6">
                     <div class="input-group input-group-merge">
                         <span class="input-group-text"><i class="icon-base ti tabler-search"></i></span>
-                        <input type="text" id="botSearchInput" class="form-control" placeholder="Search bots by name, username, or channel...">
+                        <input type="text" id="botSearchInput" class="form-control" placeholder="<?= htmlspecialchars($language::get('search_bots_placeholder')); ?>">
                     </div>
                 </div>
                 <div class="col-12 col-md-6 text-md-end">
                     <span class="text-muted fs-7">
                         <i class="icon-base ti tabler-info-circle text-primary me-1"></i>
-                        Movies broadcast automatically when downloads finish with <code>stream_status = 0</code>.
+                        <?= $language::get('broadcast_movies_help'); ?>
                     </span>
                 </div>
             </div>
@@ -207,9 +207,9 @@ $rLogs = $recentLogs ?? [];
                                             </h5>
                                             <div class="d-flex align-items-center gap-1">
                                                 <?php if ($isActive): ?>
-                                                    <span class="status-pulse-dot" title="Active"></span>
+                                                    <span class="status-pulse-dot" title="<?= htmlspecialchars($language::get('active')); ?>"></span>
                                                 <?php else: ?>
-                                                    <span class="badge bg-label-secondary rounded-pill fs-8">Paused</span>
+                                                    <span class="badge bg-label-secondary rounded-pill fs-8"><?= $language::get('paused'); ?></span>
                                                 <?php endif; ?>
                                                 <?php if (!empty($b['bot_username'])): ?>
                                                     <a href="https://t.me/<?= urlencode((string)$b['bot_username']); ?>" target="_blank" class="text-muted fs-7 text-decoration-none">
@@ -221,7 +221,7 @@ $rLogs = $recentLogs ?? [];
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-check form-switch m-0" title="<?= $isActive ? 'Bot is Active' : 'Bot is Paused'; ?>">
+                                    <div class="form-check form-switch m-0" title="<?= $isActive ? htmlspecialchars($language::get('active_broadcasting_enabled')) : htmlspecialchars($language::get('paused_broadcasting_disabled')); ?>">
                                         <input class="form-check-input js-toggle-status" type="checkbox" role="switch" data-id="<?= $botId; ?>" <?= $isActive ? 'checked' : ''; ?>>
                                     </div>
                                 </div>
@@ -234,28 +234,28 @@ $rLogs = $recentLogs ?? [];
                                             <?= htmlspecialchars((string)$b['chat_id']); ?>
                                         </span>
                                     </div>
-                                    <button type="button" class="btn btn-xs btn-outline-secondary p-1 border-0" onclick="navigator.clipboard.writeText('<?= addslashes((string)$b['chat_id']); ?>'); toast('success', 'Chat ID copied!');" title="Copy Chat ID">
+                                    <button type="button" class="btn btn-xs btn-outline-secondary p-1 border-0" onclick="navigator.clipboard.writeText('<?= addslashes((string)$b['chat_id']); ?>'); toast('success', '<?= addslashes($language::get('chat_id_copied')); ?>');" title="<?= htmlspecialchars($language::get('chat_id_copied')); ?>">
                                         <i class="icon-base ti tabler-copy fs-6"></i>
                                     </button>
                                 </div>
 
                                 <!-- Content Tags & Rules -->
                                 <div class="mb-3">
-                                    <span class="text-muted fs-8 text-uppercase fw-semibold d-block mb-1">Broadcasting:</span>
+                                    <span class="text-muted fs-8 text-uppercase fw-semibold d-block mb-1"><?= $language::get('broadcasting_label'); ?></span>
                                     <div class="d-flex flex-wrap gap-1">
                                         <?php if (in_array('movies', $types, true) || (int)$b['notify_on_movie_complete'] === 1): ?>
                                             <span class="badge bg-label-primary rounded-pill fs-8">
-                                                <i class="icon-base ti tabler-movie me-1"></i> Movies (VOD)
+                                                <i class="icon-base ti tabler-movie me-1"></i> <?= $language::get('broadcasting_movies'); ?>
                                             </span>
                                         <?php endif; ?>
                                         <?php if (in_array('episodes', $types, true) || (int)$b['notify_on_episode'] === 1): ?>
                                             <span class="badge bg-label-info rounded-pill fs-8">
-                                                <i class="icon-base ti tabler-device-tv me-1"></i> TV Episodes
+                                                <i class="icon-base ti tabler-device-tv me-1"></i> <?= $language::get('broadcasting_episodes'); ?>
                                             </span>
                                         <?php endif; ?>
                                         <?php if (in_array('live', $types, true) || (int)$b['notify_on_live'] === 1): ?>
                                             <span class="badge bg-label-success rounded-pill fs-8">
-                                                <i class="icon-base ti tabler-live-photo me-1"></i> Live TV
+                                                <i class="icon-base ti tabler-live-photo me-1"></i> <?= $language::get('broadcasting_live'); ?>
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -265,15 +265,15 @@ $rLogs = $recentLogs ?? [];
                                 <div class="row g-2 mb-3">
                                     <div class="col-6">
                                         <div class="p-2 border rounded-2 bg-light-subtle">
-                                            <span class="text-muted fs-8 d-block">Scope:</span>
+                                            <span class="text-muted fs-8 d-block"><?= $language::get('scope_label'); ?></span>
                                             <span class="fw-semibold fs-7">
-                                                <?= $hasCats ? count($catArray) . ' Categories' : 'All Categories'; ?>
+                                                <?= $hasCats ? count($catArray) . ' ' . $language::get('categories_count') : $language::get('all_categories'); ?>
                                             </span>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="p-2 border rounded-2 bg-light-subtle">
-                                            <span class="text-muted fs-8 d-block">Media:</span>
+                                            <span class="text-muted fs-8 d-block"><?= $language::get('media_label'); ?></span>
                                             <span class="fw-semibold fs-7 text-capitalize">
                                                 <?= htmlspecialchars((string)$b['image_type']); ?>
                                             </span>
@@ -294,18 +294,18 @@ $rLogs = $recentLogs ?? [];
                             <!-- Footer section: Stats & Actions -->
                             <div class="pt-3 border-top">
                                 <div class="d-flex justify-content-between align-items-center mb-3 fs-8 text-muted">
-                                    <span>Sent: <b class="text-body"><?= number_format((int)$b['total_sent']); ?></b></span>
-                                    <span>Last: <b class="text-body"><?= !empty($b['last_sent_at']) ? date('M d, H:i', (int)$b['last_sent_at']) : 'Never'; ?></b></span>
+                                    <span><?= $language::get('sent_label'); ?> <b class="text-body"><?= number_format((int)$b['total_sent']); ?></b></span>
+                                    <span><?= $language::get('last_label'); ?> <b class="text-body"><?= !empty($b['last_sent_at']) ? date('M d, H:i', (int)$b['last_sent_at']) : $language::get('never'); ?></b></span>
                                 </div>
 
                                 <div class="d-flex gap-2">
                                     <button type="button" class="btn btn-sm btn-label-primary flex-grow-1 js-btn-test" data-id="<?= $botId; ?>" data-name="<?= htmlspecialchars((string)$b['name'], ENT_QUOTES); ?>">
                                         <i class="icon-base ti tabler-send me-1"></i> <?= $language::get('broadcast_test'); ?>
                                     </button>
-                                    <a href="telegram_bot?id=<?= $botId; ?>" class="btn btn-sm btn-icon btn-label-secondary" title="Edit Bot (Wizard)">
+                                    <a href="telegram_bot?id=<?= $botId; ?>" class="btn btn-sm btn-icon btn-label-secondary" title="<?= htmlspecialchars($language::get('edit_bot')); ?>">
                                         <i class="icon-base ti tabler-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-icon btn-label-danger js-btn-delete" data-id="<?= $botId; ?>" data-name="<?= htmlspecialchars((string)$b['name'], ENT_QUOTES); ?>" title="Delete Bot">
+                                    <button type="button" class="btn btn-sm btn-icon btn-label-danger js-btn-delete" data-id="<?= $botId; ?>" data-name="<?= htmlspecialchars((string)$b['name'], ENT_QUOTES); ?>" title="<?= htmlspecialchars($language::get('delete_bot')); ?>">
                                         <i class="icon-base ti tabler-trash"></i>
                                     </button>
                                 </div>
@@ -325,7 +325,7 @@ $rLogs = $recentLogs ?? [];
             <div class="modal-header border-bottom">
                 <h5 class="modal-title d-flex align-items-center gap-2">
                     <i class="icon-base ti tabler-history text-primary"></i>
-                    <span>Broadcast History Logs</span>
+                    <span><?= $language::get('broadcast_history_logs'); ?></span>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -334,18 +334,18 @@ $rLogs = $recentLogs ?? [];
                     <table class="table table-hover align-middle mb-0 fs-7">
                         <thead class="table-light">
                             <tr>
-                                <th>Status</th>
-                                <th>Bot</th>
-                                <th>Media Title</th>
-                                <th>Chat ID</th>
-                                <th>Type</th>
-                                <th>Time</th>
+                                <th><?= $language::get('log_status'); ?></th>
+                                <th><?= $language::get('log_bot'); ?></th>
+                                <th><?= $language::get('log_media_title'); ?></th>
+                                <th><?= $language::get('log_chat_id'); ?></th>
+                                <th><?= $language::get('log_type'); ?></th>
+                                <th><?= $language::get('log_time'); ?></th>
                             </tr>
                         </thead>
                         <tbody id="logsTableBody">
                             <?php if (empty($rLogs)): ?>
                                 <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">No broadcasts recorded yet.</td>
+                                    <td colspan="6" class="text-center py-4 text-muted"><?= $language::get('no_broadcasts_recorded'); ?></td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($rLogs as $log): ?>
@@ -355,9 +355,9 @@ $rLogs = $recentLogs ?? [];
                                     <tr>
                                         <td>
                                             <?php if ($isSent): ?>
-                                                <span class="badge bg-label-success">Sent</span>
+                                                <span class="badge bg-label-success"><?= $language::get('btn_sent'); ?></span>
                                             <?php else: ?>
-                                                <span class="badge bg-label-danger" title="<?= htmlspecialchars((string)$log['details']); ?>">Failed</span>
+                                                <span class="badge bg-label-danger" title="<?= htmlspecialchars((string)$log['details']); ?>"><?= $language::get('btn_failed'); ?></span>
                                             <?php endif; ?>
                                         </td>
                                         <td class="fw-semibold text-truncate" style="max-width:140px;"><?= htmlspecialchars((string)($log['bot_name'] ?? 'Bot #' . $log['bot_id'])); ?></td>
@@ -373,7 +373,7 @@ $rLogs = $recentLogs ?? [];
                 </div>
             </div>
             <div class="modal-footer border-top">
-                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal"><?= $language::get('btn_close'); ?></button>
             </div>
         </div>
     </div>

@@ -1,5 +1,21 @@
+<?php
+$language = (!empty($language) && class_exists($language)) ? $language : \XcVm\Module\Telegram\TelegramTranslator::class;
+?>
 <script>
 (function() {
+    var txtChecking = <?= json_encode($language::get('checking')); ?>;
+    var txtSending = <?= json_encode($language::get('sending')); ?>;
+    var txtEnterName = <?= json_encode($language::get('enter_bot_name_err')); ?>;
+    var txtEnterToken = <?= json_encode($language::get('enter_bot_token_err')); ?>;
+    var txtEnterChat = <?= json_encode($language::get('enter_chat_id_err')); ?>;
+    var txtTokenSuccess = <?= json_encode($language::get('token_verified')); ?>;
+    var txtTokenFail = <?= json_encode($language::get('test_broadcast_failed')); ?>;
+    var txtChatSuccess = <?= json_encode($language::get('test_message_sent')); ?>;
+    var txtChatFail = <?= json_encode($language::get('test_message_failed')); ?>;
+    var txtNetError = <?= json_encode($language::get('net_error')); ?>;
+    var txtSaveSuccess = <?= json_encode($language::get('bot_saved_success')); ?>;
+    var txtSaveFail = <?= json_encode($language::get('bot_saved_failed')); ?>;
+
     function toast(type, msg) {
         if (window.xcToast) {
             window.xcToast(msg, type);
@@ -55,12 +71,12 @@
                 // Validate Step 1
                 var name = document.getElementById('bot_name').value.trim();
                 var token = document.getElementById('bot_token').value.trim();
-                if (!name) { toast('error', 'Please enter a bot name'); return; }
-                if (!token) { toast('error', 'Please enter the Telegram bot token'); return; }
+                if (!name) { toast('error', txtEnterName); return; }
+                if (!token) { toast('error', txtEnterToken); return; }
             } else if (target === 3) {
                 // Validate Step 2
                 var chat = document.getElementById('chat_id').value.trim();
-                if (!chat) { toast('error', 'Please enter a target Channel or Chat ID'); return; }
+                if (!chat) { toast('error', txtEnterChat); return; }
             }
             goToStep(target);
         });
@@ -79,13 +95,13 @@
         btnVerify.addEventListener('click', function() {
             var token = document.getElementById('bot_token').value.trim();
             if (!token) {
-                toast('error', 'Please enter a bot token first.');
+                toast('error', txtEnterToken);
                 return;
             }
 
             var originalHtml = btnVerify.innerHTML;
             btnVerify.disabled = true;
-            btnVerify.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Checking...';
+            btnVerify.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> ' + txtChecking;
 
             fetch('./api?action=telegram_bot_test_token&bot_token=' + encodeURIComponent(token), {
                 method: 'POST',
@@ -100,15 +116,15 @@
                     resDiv.classList.remove('d-none');
                     document.getElementById('verifiedBotName').textContent = data.result.name || 'Telegram Bot';
                     document.getElementById('verifiedBotUsername').textContent = '@' + data.result.username;
-                    toast('success', data.message || 'Token verified successfully!');
+                    toast('success', data.message || txtTokenSuccess);
                 } else {
-                    toast('error', data.message || 'Failed to verify token');
+                    toast('error', data.message || txtTokenFail);
                 }
             })
             .catch(function() {
                 btnVerify.disabled = false;
                 btnVerify.innerHTML = originalHtml;
-                toast('error', 'Connection error to server');
+                toast('error', txtNetError);
             });
         });
     }
@@ -122,13 +138,13 @@
             var botName = document.getElementById('bot_name').value.trim() || 'XC_VM Bot';
 
             if (!token || !chatId) {
-                toast('error', 'Please enter both Bot Token and Channel/Chat ID.');
+                toast('error', txtEnterToken + ' / ' + txtEnterChat);
                 return;
             }
 
             var originalHtml = btnTestChat.innerHTML;
             btnTestChat.disabled = true;
-            btnTestChat.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Sending...';
+            btnTestChat.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> ' + txtSending;
 
             var alertBox = document.getElementById('chatTestAlert');
             alertBox.className = 'mt-3 d-none';
@@ -144,18 +160,18 @@
                 alertBox.classList.remove('d-none');
                 if (data.result) {
                     alertBox.className = 'alert alert-success p-2 fs-7';
-                    alertBox.textContent = '✅ ' + (data.message || 'Test message sent successfully!');
-                    toast('success', data.message || 'Test message sent!');
+                    alertBox.textContent = '✅ ' + (data.message || txtChatSuccess);
+                    toast('success', data.message || txtChatSuccess);
                 } else {
                     alertBox.className = 'alert alert-danger p-2 fs-7';
-                    alertBox.textContent = '❌ ' + (data.message || 'Failed to send test message. Check bot permissions.');
-                    toast('error', data.message || 'Failed to send test message');
+                    alertBox.textContent = '❌ ' + (data.message || txtChatFail);
+                    toast('error', data.message || txtChatFail);
                 }
             })
             .catch(function() {
                 btnTestChat.disabled = false;
                 btnTestChat.innerHTML = originalHtml;
-                toast('error', 'Connection error to server');
+                toast('error', txtNetError);
             });
         });
     }
@@ -277,18 +293,18 @@
                 btn.disabled = false;
                 spinner.classList.add('d-none');
                 if (data.result) {
-                    toast('success', data.message || 'Bot saved successfully!');
+                    toast('success', data.message || txtSaveSuccess);
                     setTimeout(function() {
                         window.location.href = 'telegram_bots';
                     }, 800);
                 } else {
-                    toast('error', data.message || 'Failed to save bot.');
+                    toast('error', data.message || txtSaveFail);
                 }
             })
             .catch(function() {
                 btn.disabled = false;
                 spinner.classList.add('d-none');
-                toast('error', 'Connection error to server.');
+                toast('error', txtNetError);
             });
         });
     }

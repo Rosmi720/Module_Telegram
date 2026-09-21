@@ -1,5 +1,21 @@
+<?php
+$language = (!empty($language) && class_exists($language)) ? $language : \XcVm\Module\Telegram\TelegramTranslator::class;
+?>
 <script>
 (function() {
+    var txtSending = <?= json_encode($language::get('sending')); ?>;
+    var txtStatusUpdated = <?= json_encode($language::get('status_updated')); ?>;
+    var txtStatusUpdateFailed = <?= json_encode($language::get('status_update_failed')); ?>;
+    var txtNetError = <?= json_encode($language::get('net_error')); ?>;
+    var txtTestSent = <?= json_encode($language::get('test_broadcast_sent')); ?>;
+    var txtTestFailed = <?= json_encode($language::get('test_broadcast_failed')); ?>;
+    var txtDeleteModalTitle = <?= json_encode($language::get('delete_bot_modal_title')); ?>;
+    var txtDeleteConfirm = <?= json_encode($language::get('delete_bot_confirm_text')); ?>;
+    var txtConfirmBtn = <?= json_encode($language::get('confirm_delete_btn')); ?>;
+    var txtCancelBtn = <?= json_encode($language::get('cancel')); ?>;
+    var txtBotDeleted = <?= json_encode($language::get('bot_deleted')); ?>;
+    var txtDeleteFailed = <?= json_encode($language::get('bot_delete_failed')); ?>;
+
     function toast(type, msg) {
         if (window.xcToast) {
             window.xcToast(msg, type);
@@ -49,15 +65,15 @@
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (data.result) {
-                    toast('success', data.message || 'Status updated');
+                    toast('success', data.message || txtStatusUpdated);
                 } else {
                     el.checked = !el.checked;
-                    toast('error', data.message || 'Failed to update status');
+                    toast('error', data.message || txtStatusUpdateFailed);
                 }
             })
             .catch(function() {
                 el.checked = !el.checked;
-                toast('error', 'Network error');
+                toast('error', txtNetError);
             });
         });
     });
@@ -68,7 +84,7 @@
             var id = this.getAttribute('data-id');
             var originalHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Sending...';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> ' + txtSending;
 
             fetch('./api?action=telegram_bot_broadcast_test&bot_id=' + encodeURIComponent(id), {
                 method: 'POST',
@@ -79,15 +95,15 @@
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
                 if (data.result) {
-                    toast('success', data.message || 'Test broadcast sent successfully!');
+                    toast('success', data.message || txtTestSent);
                 } else {
-                    toast('error', data.message || 'Failed to send broadcast');
+                    toast('error', data.message || txtTestFailed);
                 }
             })
             .catch(function() {
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
-                toast('error', 'Network connection error');
+                toast('error', txtNetError);
             });
         });
     });
@@ -101,15 +117,16 @@
 
             var confirmPromise = typeof Swal !== 'undefined'
                 ? Swal.fire({
-                    title: 'Delete Bot?',
-                    text: 'Are you sure you want to delete "' + name + '"? All related broadcast history will be removed.',
+                    title: txtDeleteModalTitle,
+                    text: txtDeleteConfirm,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#ea5455',
                     cancelButtonColor: '#82868b',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: txtConfirmBtn,
+                    cancelButtonText: txtCancelBtn
                 }).then(function(r) { return r.isConfirmed; })
-                : Promise.resolve(window.confirm('Delete bot ' + name + '?'));
+                : Promise.resolve(window.confirm(name + ': ' + txtDeleteConfirm));
 
             confirmPromise.then(function(confirmed) {
                 if (!confirmed) return;
@@ -121,16 +138,16 @@
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     if (data.result) {
-                        toast('success', data.message || 'Bot deleted');
+                        toast('success', data.message || txtBotDeleted);
                         if (cardWrapper) {
                             cardWrapper.remove();
                         }
                     } else {
-                        toast('error', data.message || 'Failed to delete bot');
+                        toast('error', data.message || txtDeleteFailed);
                     }
                 })
                 .catch(function() {
-                    toast('error', 'Network connection error');
+                    toast('error', txtNetError);
                 });
             });
         });

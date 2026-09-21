@@ -45,8 +45,8 @@ class TelegramController
     public function index(): void
     {
         global $rMobile, $rSettings;
-        $language = \XcVm\Core\Localization\Translator::class;
-        $_TITLE = 'Telegram Bots';
+        $language = TelegramTranslator::class;
+        $_TITLE = $language::get('telegram_bots');
 
         $bots = TelegramBotService::getBots();
         $stats = TelegramBotService::getStats();
@@ -64,7 +64,7 @@ class TelegramController
     public function bot(): void
     {
         global $rMobile, $rSettings;
-        $language = \XcVm\Core\Localization\Translator::class;
+        $language = TelegramTranslator::class;
 
         $id = RequestManager::has('id') ? (int)RequestManager::get('id') : 0;
         $bot = null;
@@ -75,9 +75,9 @@ class TelegramController
                 header('Location: telegram_bots');
                 exit();
             }
-            $_TITLE = 'Edit Telegram Bot: ' . $bot['name'];
+            $_TITLE = $language::get('edit_telegram_bot') . ': ' . $bot['name'];
         } else {
-            $_TITLE = 'Add Telegram Bot';
+            $_TITLE = $language::get('add_new_telegram_bot');
         }
 
         $categories = TelegramBotService::getCategoriesForFilter();
