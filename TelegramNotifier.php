@@ -86,7 +86,7 @@ class TelegramNotifier
 
         $categoryName = null;
         if (!empty($movieCategoryIds[0])) {
-            $db->query('SELECT `category_name` FROM `stream_categories` WHERE `id` = ? LIMIT 1;', $movieCategoryIds[0]);
+            $db->query('SELECT `category_name` FROM `streams_categories` WHERE `id` = ? LIMIT 1;', $movieCategoryIds[0]);
             if ($db->num_rows() > 0) {
                 $categoryName = $db->get_row()['category_name'];
             }
@@ -218,7 +218,7 @@ class TelegramNotifier
         $catId = is_numeric($episode['category_id'] ?? null) ? (int)$episode['category_id'] : (int)(json_decode((string)($episode['category_id'] ?? '[]'), true)[0] ?? 0);
         $categoryName = null;
         if ($catId > 0) {
-            $db->query('SELECT `category_name` FROM `stream_categories` WHERE `id` = ? LIMIT 1;', $catId);
+            $db->query('SELECT `category_name` FROM `streams_categories` WHERE `id` = ? LIMIT 1;', $catId);
             if ($db->num_rows() > 0) {
                 $categoryName = $db->get_row()['category_name'];
             }
@@ -323,7 +323,7 @@ class TelegramNotifier
         $catId = is_numeric($stream['category_id'] ?? null) ? (int)$stream['category_id'] : (int)(json_decode((string)($stream['category_id'] ?? '[]'), true)[0] ?? 0);
         $categoryName = null;
         if ($catId > 0) {
-            $db->query('SELECT `category_name` FROM `stream_categories` WHERE `id` = ? LIMIT 1;', $catId);
+            $db->query('SELECT `category_name` FROM `streams_categories` WHERE `id` = ? LIMIT 1;', $catId);
             if ($db->num_rows() > 0) {
                 $categoryName = $db->get_row()['category_name'];
             }

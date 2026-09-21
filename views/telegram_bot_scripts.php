@@ -196,16 +196,107 @@ $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\M
     var btnSelectAllCats = document.getElementById('btnSelectAllCats');
     if (btnSelectAllCats) {
         btnSelectAllCats.addEventListener('click', function() {
-            document.querySelectorAll('.js-cat-checkbox').forEach(function(cb) { cb.checked = true; });
+            document.querySelectorAll('.js-cat-checkbox').forEach(function(cb) {
+                var item = cb.closest('.js-cat-item');
+                if (!item || item.style.display !== 'none') {
+                    cb.checked = true;
+                }
+            });
         });
     }
 
     var btnDeselectAllCats = document.getElementById('btnDeselectAllCats');
     if (btnDeselectAllCats) {
         btnDeselectAllCats.addEventListener('click', function() {
-            document.querySelectorAll('.js-cat-checkbox').forEach(function(cb) { cb.checked = false; });
+            document.querySelectorAll('.js-cat-checkbox').forEach(function(cb) {
+                var item = cb.closest('.js-cat-item');
+                if (!item || item.style.display !== 'none') {
+                    cb.checked = false;
+                }
+            });
         });
     }
+
+    // Category Type Filter Pills
+    var currentTypeFilter = 'all';
+    document.querySelectorAll('.js-cat-filter').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.js-cat-filter').forEach(function(b) {
+                b.classList.remove('active', 'btn-primary');
+                b.classList.add('btn-outline-primary');
+            });
+            this.classList.add('active', 'btn-primary');
+            this.classList.remove('btn-outline-primary');
+            currentTypeFilter = this.getAttribute('data-filter') || 'all';
+            applyCatFilters();
+        });
+    });
+
+    // Category Live Search
+    var catSearchInput = document.getElementById('catSearchInput');
+    var btnCatSearchClear = document.getElementById('btnCatSearchClear');
+    if (catSearchInput) {
+        catSearchInput.addEventListener('input', function() {
+            if (btnCatSearchClear) {
+                btnCatSearchClear.style.display = this.value ? 'inline-block' : 'none';
+            }
+            applyCatFilters();
+        });
+    }
+    if (btnCatSearchClear) {
+        btnCatSearchClear.addEventListener('click', function() {
+            if (catSearchInput) {
+                catSearchInput.value = '';
+                this.style.display = 'none';
+                applyCatFilters();
+                catSearchInput.focus();
+            }
+        });
+    }
+
+    function applyCatFilters() {
+        var query = catSearchInput ? catSearchInput.value.trim().toLowerCase() : '';
+        var totalVisible = 0;
+
+        document.querySelectorAll('.js-cat-group').forEach(function(group) {
+            var groupType = group.getAttribute('data-group');
+            var groupMatchesType = (currentTypeFilter === 'all' || currentTypeFilter === groupType);
+            var groupVisibleItems = 0;
+
+            group.querySelectorAll('.js-cat-item').forEach(function(item) {
+                var name = item.getAttribute('data-cat-name') || '';
+                var matchesQuery = !query || name.indexOf(query) !== -1;
+
+                if (groupMatchesType && matchesQuery) {
+                    item.style.display = '';
+                    groupVisibleItems++;
+                    totalVisible++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            group.style.display = (groupMatchesType && groupVisibleItems > 0) ? '' : 'none';
+        });
+
+        var noFound = document.getElementById('noCatsFoundMessage');
+        if (noFound) {
+            noFound.classList.toggle('d-none', totalVisible > 0);
+        }
+    }
+
+    // Group toggle (select all / deselect all within a single group)
+    document.querySelectorAll('.js-toggle-group-cats').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var grpName = this.getAttribute('data-group');
+            var grp = document.querySelector('.js-cat-group[data-group="' + grpName + '"]');
+            if (!grp) return;
+            var cbs = grp.querySelectorAll('.js-cat-checkbox');
+            var allChecked = Array.from(cbs).every(function(cb) { return cb.checked; });
+            cbs.forEach(function(cb) { cb.checked = !allChecked; });
+            this.textContent = allChecked ? (txtSelectAll || 'Select All') : (txtClearSelection || 'Clear Selection');
+        });
+    });
 
     // Step 4: Media choice radio styling
     document.querySelectorAll('input[name="image_type"]').forEach(function(r) {

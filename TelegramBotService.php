@@ -331,7 +331,7 @@ class TelegramBotService
             $catId = is_numeric($movie['category_id'] ?? null) ? (int)$movie['category_id'] : (int)(json_decode((string)($movie['category_id'] ?? '[]'), true)[0] ?? 0);
             $categoryName = null;
             if ($catId > 0) {
-                $db->query('SELECT `category_name` FROM `stream_categories` WHERE `id` = ? LIMIT 1;', $catId);
+                $db->query('SELECT `category_name` FROM `streams_categories` WHERE `id` = ? LIMIT 1;', $catId);
                 if ($db->num_rows() > 0) {
                     $categoryName = $db->get_row()['category_name'];
                 }
@@ -429,13 +429,14 @@ class TelegramBotService
     public static function getCategoriesForFilter(): array
     {
         $db = self::db();
-        $db->query('SELECT `id`, `category_name`, `category_type` FROM `stream_categories` ORDER BY `category_type` ASC, `category_name` ASC;');
+        $db->query('SELECT `id`, `category_name`, `category_type` FROM `streams_categories` ORDER BY `category_type` ASC, `category_name` ASC;');
         $rows = $db->get_rows() ?: [];
 
         $grouped = [
             'movies' => [],
             'series' => [],
             'live'   => [],
+            'radio'  => [],
         ];
 
         foreach ($rows as $r) {
@@ -444,6 +445,8 @@ class TelegramBotService
                 $grouped['movies'][] = $r;
             } elseif ($type === 'series') {
                 $grouped['series'][] = $r;
+            } elseif ($type === 'radio') {
+                $grouped['radio'][] = $r;
             } else {
                 $grouped['live'][] = $r;
             }

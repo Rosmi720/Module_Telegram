@@ -13,7 +13,7 @@
 $language = (!empty($language) && class_exists($language)) ? $language : \XcVm\Module\Telegram\TelegramTranslator::class;
 $rBot = $bot ?? null;
 $rIsEdit = !empty($isEdit);
-$rCategories = $categories ?? ['movies' => [], 'series' => [], 'live' => []];
+$rCategories = $categories ?? ['movies' => [], 'series' => [], 'live' => [], 'radio' => []];
 
 $botId = $rBot['id'] ?? 0;
 $name = $rBot['name'] ?? '';
@@ -299,7 +299,7 @@ $hasCustomCats = !empty($cats);
 
                     <!-- Custom Category Selection Box -->
                     <div id="categorySelectionContainer" class="border rounded-3 p-3 bg-light-subtle <?= $hasCustomCats ? '' : 'd-none'; ?>">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                             <span class="fs-7 fw-bold text-muted"><?= $language::get('select_permitted_categories'); ?></span>
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-xs btn-outline-primary" id="btnSelectAllCats"><?= $language::get('select_all'); ?></button>
@@ -307,62 +307,156 @@ $hasCustomCats = !empty($cats);
                             </div>
                         </div>
 
-                        <!-- Movies Categories -->
-                        <?php if (!empty($rCategories['movies'])): ?>
-                            <div class="mb-3">
-                                <span class="fw-bold fs-7 d-block mb-2 text-primary">🎬 <?= $language::get('movies_categories'); ?></span>
-                                <div class="row g-2">
-                                    <?php foreach ($rCategories['movies'] as $cat): ?>
-                                        <div class="col-6 col-md-4 col-lg-3">
-                                            <div class="form-check form-check-inline fs-7 m-0">
-                                                <input class="form-check-input js-cat-checkbox" type="checkbox" name="categories[]" id="cat_<?= (int)$cat['id']; ?>" value="<?= (int)$cat['id']; ?>" <?= in_array((int)$cat['id'], $cats, true) ? 'checked' : ''; ?>>
-                                                <label class="form-check-label text-truncate" for="cat_<?= (int)$cat['id']; ?>" title="<?= htmlspecialchars((string)$cat['category_name']); ?>">
-                                                    <?= htmlspecialchars((string)$cat['category_name']); ?>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                        <!-- Quick Search & Type Filter Bar -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-12 col-md-6">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-body"><i class="icon-base ti tabler-search text-muted"></i></span>
+                                    <input type="text" id="catSearchInput" class="form-control" placeholder="<?= $language::get('search_categories_placeholder'); ?>">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btnCatSearchClear" style="display:none;">&times;</button>
                                 </div>
                             </div>
-                        <?php endif; ?>
+                            <div class="col-12 col-md-6">
+                                <div class="d-flex flex-wrap gap-1 justify-content-md-end" id="catTypePills">
+                                    <button type="button" class="btn btn-xs btn-primary js-cat-filter active" data-filter="all">
+                                        <?= $language::get('all_categories'); ?> <span class="badge bg-white text-primary ms-1"><?= count($rCategories['movies']) + count($rCategories['series']) + count($rCategories['live']) + count($rCategories['radio'] ?? []); ?></span>
+                                    </button>
+                                    <?php if (!empty($rCategories['movies'])): ?>
+                                        <button type="button" class="btn btn-xs btn-outline-primary js-cat-filter" data-filter="movies">
+                                            🎬 <?= $language::get('movies_categories'); ?> <span class="badge bg-label-primary ms-1"><?= count($rCategories['movies']); ?></span>
+                                        </button>
+                                    <?php endif; ?>
+                                    <?php if (!empty($rCategories['series'])): ?>
+                                        <button type="button" class="btn btn-xs btn-outline-info js-cat-filter" data-filter="series">
+                                            📺 <?= $language::get('series_categories'); ?> <span class="badge bg-label-info ms-1"><?= count($rCategories['series']); ?></span>
+                                        </button>
+                                    <?php endif; ?>
+                                    <?php if (!empty($rCategories['live'])): ?>
+                                        <button type="button" class="btn btn-xs btn-outline-success js-cat-filter" data-filter="live">
+                                            📡 <?= $language::get('live_tv_categories'); ?> <span class="badge bg-label-success ms-1"><?= count($rCategories['live']); ?></span>
+                                        </button>
+                                    <?php endif; ?>
+                                    <?php if (!empty($rCategories['radio'])): ?>
+                                        <button type="button" class="btn btn-xs btn-outline-warning js-cat-filter" data-filter="radio">
+                                            📻 <?= $language::get('radio_categories'); ?> <span class="badge bg-label-warning ms-1"><?= count($rCategories['radio']); ?></span>
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
 
-                        <!-- Series Categories -->
-                        <?php if (!empty($rCategories['series'])): ?>
-                            <div class="mb-3">
-                                <span class="fw-bold fs-7 d-block mb-2 text-info">📺 <?= $language::get('series_categories'); ?></span>
-                                <div class="row g-2">
-                                    <?php foreach ($rCategories['series'] as $cat): ?>
-                                        <div class="col-6 col-md-4 col-lg-3">
-                                            <div class="form-check form-check-inline fs-7 m-0">
-                                                <input class="form-check-input js-cat-checkbox" type="checkbox" name="categories[]" id="cat_<?= (int)$cat['id']; ?>" value="<?= (int)$cat['id']; ?>" <?= in_array((int)$cat['id'], $cats, true) ? 'checked' : ''; ?>>
-                                                <label class="form-check-label text-truncate" for="cat_<?= (int)$cat['id']; ?>" title="<?= htmlspecialchars((string)$cat['category_name']); ?>">
-                                                    <?= htmlspecialchars((string)$cat['category_name']); ?>
-                                                </label>
+                        <!-- Scrollable Categories Area -->
+                        <div class="cat-list-wrapper border rounded-2 p-2 bg-body" style="max-height: 420px; overflow-y: auto; overflow-x: hidden;">
+                            <!-- Movies Categories -->
+                            <?php if (!empty($rCategories['movies'])): ?>
+                                <div class="mb-3 js-cat-group" data-group="movies">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                                        <span class="fw-bold fs-7 text-primary d-flex align-items-center gap-1">
+                                            <span>🎬</span>
+                                            <span><?= $language::get('movies_categories'); ?></span>
+                                            <span class="badge bg-label-primary fs-8 ms-1"><?= count($rCategories['movies']); ?></span>
+                                        </span>
+                                        <button type="button" class="btn btn-xs btn-link p-0 text-decoration-none js-toggle-group-cats" data-group="movies"><?= $language::get('select_all'); ?></button>
+                                    </div>
+                                    <div class="row g-2">
+                                        <?php foreach ($rCategories['movies'] as $cat): ?>
+                                            <div class="col-6 col-md-4 col-lg-3 js-cat-item" data-cat-type="movies" data-cat-name="<?= strtolower(htmlspecialchars((string)$cat['category_name'])); ?>">
+                                                <div class="form-check form-check-inline fs-7 m-0 w-100">
+                                                    <input class="form-check-input js-cat-checkbox" type="checkbox" name="categories[]" id="cat_<?= (int)$cat['id']; ?>" value="<?= (int)$cat['id']; ?>" <?= in_array((int)$cat['id'], $cats, true) ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label text-truncate w-100" for="cat_<?= (int)$cat['id']; ?>" title="<?= htmlspecialchars((string)$cat['category_name']); ?>">
+                                                        <?= htmlspecialchars((string)$cat['category_name']); ?>
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
 
-                        <!-- Live Categories -->
-                        <?php if (!empty($rCategories['live'])): ?>
-                            <div>
-                                <span class="fw-bold fs-7 d-block mb-2 text-success">📡 <?= $language::get('live_tv_categories'); ?></span>
-                                <div class="row g-2">
-                                    <?php foreach ($rCategories['live'] as $cat): ?>
-                                        <div class="col-6 col-md-4 col-lg-3">
-                                            <div class="form-check form-check-inline fs-7 m-0">
-                                                <input class="form-check-input js-cat-checkbox" type="checkbox" name="categories[]" id="cat_<?= (int)$cat['id']; ?>" value="<?= (int)$cat['id']; ?>" <?= in_array((int)$cat['id'], $cats, true) ? 'checked' : ''; ?>>
-                                                <label class="form-check-label text-truncate" for="cat_<?= (int)$cat['id']; ?>" title="<?= htmlspecialchars((string)$cat['category_name']); ?>">
-                                                    <?= htmlspecialchars((string)$cat['category_name']); ?>
-                                                </label>
+                            <!-- Series Categories -->
+                            <?php if (!empty($rCategories['series'])): ?>
+                                <div class="mb-3 js-cat-group" data-group="series">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                                        <span class="fw-bold fs-7 text-info d-flex align-items-center gap-1">
+                                            <span>📺</span>
+                                            <span><?= $language::get('series_categories'); ?></span>
+                                            <span class="badge bg-label-info fs-8 ms-1"><?= count($rCategories['series']); ?></span>
+                                        </span>
+                                        <button type="button" class="btn btn-xs btn-link p-0 text-decoration-none js-toggle-group-cats" data-group="series"><?= $language::get('select_all'); ?></button>
+                                    </div>
+                                    <div class="row g-2">
+                                        <?php foreach ($rCategories['series'] as $cat): ?>
+                                            <div class="col-6 col-md-4 col-lg-3 js-cat-item" data-cat-type="series" data-cat-name="<?= strtolower(htmlspecialchars((string)$cat['category_name'])); ?>">
+                                                <div class="form-check form-check-inline fs-7 m-0 w-100">
+                                                    <input class="form-check-input js-cat-checkbox" type="checkbox" name="categories[]" id="cat_<?= (int)$cat['id']; ?>" value="<?= (int)$cat['id']; ?>" <?= in_array((int)$cat['id'], $cats, true) ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label text-truncate w-100" for="cat_<?= (int)$cat['id']; ?>" title="<?= htmlspecialchars((string)$cat['category_name']); ?>">
+                                                        <?= htmlspecialchars((string)$cat['category_name']); ?>
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
+                            <?php endif; ?>
+
+                            <!-- Live Categories -->
+                            <?php if (!empty($rCategories['live'])): ?>
+                                <div class="mb-3 js-cat-group" data-group="live">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                                        <span class="fw-bold fs-7 text-success d-flex align-items-center gap-1">
+                                            <span>📡</span>
+                                            <span><?= $language::get('live_tv_categories'); ?></span>
+                                            <span class="badge bg-label-success fs-8 ms-1"><?= count($rCategories['live']); ?></span>
+                                        </span>
+                                        <button type="button" class="btn btn-xs btn-link p-0 text-decoration-none js-toggle-group-cats" data-group="live"><?= $language::get('select_all'); ?></button>
+                                    </div>
+                                    <div class="row g-2">
+                                        <?php foreach ($rCategories['live'] as $cat): ?>
+                                            <div class="col-6 col-md-4 col-lg-3 js-cat-item" data-cat-type="live" data-cat-name="<?= strtolower(htmlspecialchars((string)$cat['category_name'])); ?>">
+                                                <div class="form-check form-check-inline fs-7 m-0 w-100">
+                                                    <input class="form-check-input js-cat-checkbox" type="checkbox" name="categories[]" id="cat_<?= (int)$cat['id']; ?>" value="<?= (int)$cat['id']; ?>" <?= in_array((int)$cat['id'], $cats, true) ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label text-truncate w-100" for="cat_<?= (int)$cat['id']; ?>" title="<?= htmlspecialchars((string)$cat['category_name']); ?>">
+                                                        <?= htmlspecialchars((string)$cat['category_name']); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Radio Categories -->
+                            <?php if (!empty($rCategories['radio'])): ?>
+                                <div class="mb-3 js-cat-group" data-group="radio">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                                        <span class="fw-bold fs-7 text-warning d-flex align-items-center gap-1">
+                                            <span>📻</span>
+                                            <span><?= $language::get('radio_categories'); ?></span>
+                                            <span class="badge bg-label-warning fs-8 ms-1"><?= count($rCategories['radio']); ?></span>
+                                        </span>
+                                        <button type="button" class="btn btn-xs btn-link p-0 text-decoration-none js-toggle-group-cats" data-group="radio"><?= $language::get('select_all'); ?></button>
+                                    </div>
+                                    <div class="row g-2">
+                                        <?php foreach ($rCategories['radio'] as $cat): ?>
+                                            <div class="col-6 col-md-4 col-lg-3 js-cat-item" data-cat-type="radio" data-cat-name="<?= strtolower(htmlspecialchars((string)$cat['category_name'])); ?>">
+                                                <div class="form-check form-check-inline fs-7 m-0 w-100">
+                                                    <input class="form-check-input js-cat-checkbox" type="checkbox" name="categories[]" id="cat_<?= (int)$cat['id']; ?>" value="<?= (int)$cat['id']; ?>" <?= in_array((int)$cat['id'], $cats, true) ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label text-truncate w-100" for="cat_<?= (int)$cat['id']; ?>" title="<?= htmlspecialchars((string)$cat['category_name']); ?>">
+                                                        <?= htmlspecialchars((string)$cat['category_name']); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Empty search state -->
+                            <div id="noCatsFoundMessage" class="text-center py-4 text-muted d-none">
+                                <i class="icon-base ti tabler-folder-off fs-2 d-block mb-2 opacity-50"></i>
+                                <span><?= $language::get('no_categories_match'); ?></span>
                             </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-top d-flex justify-content-between p-3">
